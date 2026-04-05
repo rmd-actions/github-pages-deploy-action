@@ -6,15 +6,15 @@ import {
   DefaultExcludedFiles,
   Status,
   TestFlag
-} from './constants'
-import {execute} from './execute'
-import {generateWorktree} from './worktree'
+} from './constants.js'
+import {execute} from './execute.js'
+import {generateWorktree} from './worktree.js'
 import {
   extractErrorMessage,
   isNullOrUndefined,
   suppressSensitiveInformation,
   getRsyncVersion
-} from './util'
+} from './util.js'
 
 /**
  * Initializes git in the workspace.
@@ -97,7 +97,8 @@ export async function init(action: ActionInterface): Promise<void | Error> {
       `There was an error initializing the repository: ${suppressSensitiveInformation(
         extractErrorMessage(error),
         action
-      )} ❌`
+      )} ❌`,
+      {cause: error}
     )
   }
 }
@@ -356,7 +357,8 @@ export async function deploy(action: ActionInterface): Promise<Status> {
       `The deploy step encountered an error: ${suppressSensitiveInformation(
         extractErrorMessage(error),
         action
-      )} ❌`
+      )} ❌`,
+      {cause: error}
     )
   } finally {
     // Cleans up temporary files/folders and restores the git state.
