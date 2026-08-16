@@ -2,17 +2,20 @@ name: Publish Sponsors to README 📣
 on:
   workflow_dispatch:
   schedule:
-    - cron: 30 15 * * 0-6
+    - cron: 30 15 * * 1,4
+
+permissions:
+  contents: write
 
 jobs:
   generate-sponsors:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Generate Sponsors 💖
-        uses: JamesIves/github-sponsors-readme-action@v1
+        uses: JamesIves/github-sponsors-readme-action@02650b8cd445fc16dfef73195f9c406dce041623 # v1.6.1
         with:
           token: ${{ secrets.PAT }}
           file: 'README.md'
@@ -22,7 +25,7 @@ jobs:
           include-private: true
 
       - name: Generate Sponsors 💖
-        uses: JamesIves/github-sponsors-readme-action@v1
+        uses: JamesIves/github-sponsors-readme-action@02650b8cd445fc16dfef73195f9c406dce041623 # v1.6.1
         with:
           token: ${{ secrets.PAT }}
           file: 'README.md'
@@ -33,7 +36,7 @@ jobs:
           include-private: true
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           branch: dev
           folder: '.'

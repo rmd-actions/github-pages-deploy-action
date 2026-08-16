@@ -57,6 +57,11 @@ inputs:
     description: 'If you need to use clean but you would like to preserve certain files or folders you can use this option. This should contain each pattern as a single line in a multiline string.'
     required: false
 
+  include-github-folder:
+    description: 'A .github folder in your deployment source is excluded by default to avoid circular deployment issues. Set this to true if you actually want to deploy a .github folder from your build output. This does not affect .git or .ssh, which are always excluded.'
+    required: false
+    default: false
+
   dry-run:
     description: 'Do not actually push back, but use `--dry-run` on `git push` invocations instead.'
     required: false
@@ -84,6 +89,10 @@ inputs:
 
   single-commit:
     description: "This option can be used if you'd prefer to have a single commit on the deployment branch instead of maintaining the full history."
+    required: false
+
+  lfs:
+    description: 'Enables Git Large File Storage (LFS) support. When enabled, the action will initialize LFS in the deployment branch, allowing files tracked by LFS (via .gitattributes) to be pushed as LFS objects instead of regular Git objects. Git LFS must be available on the runner, and the deploy will fail if it is not.'
     required: false
 
   silent:
