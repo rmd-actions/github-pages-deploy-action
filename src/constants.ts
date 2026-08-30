@@ -26,6 +26,8 @@ export interface ActionInterface {
   clean?: boolean | null
   /** If you need to use CLEAN but you'd like to preserve certain files or folders you can use this option. */
   cleanExclude?: string[]
+  /** A .github folder is excluded by default to avoid circular deployment issues. Set this to deploy one from your build output anyway. */
+  includeGithubFolder?: boolean | null
   /** If you need to customize the commit message for an integration you can do so. */
   commitMessage?: string
   /** The hostname of which the GitHub Workflow is being run on, ie: github.com */
@@ -50,6 +52,8 @@ export interface ActionInterface {
   repositoryPath?: string
   /** Wipes the commit history from the deployment branch in favor of a single commit. */
   singleCommit?: boolean | null
+  /** Enables Git LFS support. */
+  lfs?: boolean | null
   /** Determines if the action should run in silent mode or not. */
   silent: boolean
   /** Defines an SSH private key that can be used during deployment. This can also be set to true to use SSH deployment endpoints if you've already configured the SSH client outside of this package. */
@@ -106,6 +110,9 @@ export const action: ActionInterface = {
   cleanExclude: (getInput('clean-exclude') || '')
     .split('\n')
     .filter(l => l !== ''),
+  includeGithubFolder: !isNullOrUndefined(getInput('include-github-folder'))
+    ? getInput('include-github-folder').toLowerCase() === 'true'
+    : false,
   hostname: process.env.GITHUB_SERVER_URL
     ? stripProtocolFromUrl(process.env.GITHUB_SERVER_URL)
     : 'github.com',
@@ -136,6 +143,9 @@ export const action: ActionInterface = {
   token: getInput('token'),
   singleCommit: !isNullOrUndefined(getInput('single-commit'))
     ? getInput('single-commit').toLowerCase() === 'true'
+    : false,
+  lfs: !isNullOrUndefined(getInput('lfs'))
+    ? getInput('lfs').toLowerCase() === 'true'
     : false,
   silent: !isNullOrUndefined(getInput('silent'))
     ? getInput('silent').toLowerCase() === 'true'
