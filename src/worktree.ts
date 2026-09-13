@@ -90,6 +90,9 @@ export async function generateWorktree(
       checkout.orphan = true
     }
 
+    // Preserved across retries so a name-collision retry doesn't drop the orphan intent.
+    const isOrphan = checkout.orphan
+
     try {
       await execute(
         checkout.toString(),
@@ -109,6 +112,7 @@ export async function generateWorktree(
 
       try {
         checkout = new GitCheckout(branchName, `origin/${action.branch}`)
+        checkout.orphan = isOrphan
         await execute(
           checkout.toString(),
           `${action.workspace}/${worktreedir}`,
@@ -122,6 +126,7 @@ export async function generateWorktree(
         info('Unable to track the origin branch…')
 
         checkout = new GitCheckout(branchName)
+        checkout.orphan = isOrphan
         await execute(
           checkout.toString(),
           `${action.workspace}/${worktreedir}`,
@@ -161,6 +166,16 @@ export async function generateWorktree(
       )
     } catch {
       info('Unable to set worktree temp directory as a safe directory…')
+    }
+
+    if (action.lfs) {
+      // Not swallowed: a silent failure here would mean large files get committed
+      // as regular blobs and fail confusingly at push time instead of failing here.
+      await execute(
+        `git lfs install --local`,
+        `${action.workspace}/${worktreedir}`,
+        action.silent
+      )
     }
   } catch (error) {
     throw new Error(
